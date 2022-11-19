@@ -1,0 +1,1 @@
+export const host = "https://gitlab.com/PixelExperience/thirteen/vendor_gapps/-/tree/thirteen/";
