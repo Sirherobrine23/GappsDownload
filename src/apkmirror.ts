@@ -124,7 +124,8 @@ export async function listPackages(androidVersion?: string) {
     }));
   }
 
-  async function get_apk_download(app: appSelect) {
+  async function get_apk_download(app?: appSelect) {
+    if (!app) return Promise.all(Object.keys(apkMap).map(app => get_apk_download(app as appSelect)));
     const versions = await get_apk_versions_url(app);
     const dataReturn: downloadObject[] = []
     for (const version of versions) {
@@ -149,12 +150,18 @@ export async function listPackages(androidVersion?: string) {
           androidRequeriments: androidRequeriments
         };
       }));
-      if (androidVersion) dataReturn.push({version: version.version, downloadUrls});
+      if (!androidVersion) dataReturn.push({version: version.version, downloadUrls});
       else dataReturn.push({
         version: version.version,
         downloadUrls: downloadUrls.filter(({androidRequeriments}) => {
-          const version = androidRequeriments.Target?.version||androidRequeriments.Min?.version;
-          return compareVersions(version, androidVersion) >= 0;
+          console.log(androidRequeriments);
+          let version = androidRequeriments.Target?.version||androidRequeriments.Min?.version;
+          if (!version) version = androidRequeriments[Object.keys(androidRequeriments).at(-1)]?.version;
+          try {
+            return compareVersions(version, androidVersion) >= 0;
+          } catch {
+            return false;
+          }
         }),
       });
     }
