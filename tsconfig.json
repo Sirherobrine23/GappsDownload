@@ -11,9 +11,11 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "allowJs": true,
+    "outDir": "./src_out",
     "lib": ["ES6"]
   },
   "include": [
+    "src/aapt.d.ts",
     "src/**/*"
   ]
 }

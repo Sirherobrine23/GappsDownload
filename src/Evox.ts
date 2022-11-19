@@ -1,17 +1,14 @@
 import { customChildProcess, extendFs } from "@the-bds-maneger/core-utils";
-import { format } from "node:util";
 import path from "node:path";
 import nodeAapt from "node-aapt";
 
 export async function listPackages(androidVersion: string) {
   const android_dict = {
-    "thirteen": "thirteen",
-    "13": "thirteen",
-    "twelve": "twelve",
-    "12": "twelve",
+    "tiramisu": "tiramisu",
+    "13": "tiramisu"
   };
-  const repo_dir = path.resolve(__dirname, "../dist/PixelExperience", android_dict[androidVersion]);
-  const repo_url = format("https://gitlab.com/PixelExperience/%s/vendor_gapps.git", android_dict[androidVersion]);
+  const repo_dir = path.resolve(__dirname, "../dist/Evox", android_dict[androidVersion]);
+  const repo_url = "https://gitlab.com/EvoX/vendor_gms.git";
   if (!await extendFs.exists(repo_dir)) await customChildProcess.execFileAsync("git", ["clone", repo_url, "-b", android_dict[androidVersion], "--depth=1", repo_dir], {stdio: "inherit"});
 
   async function get_gapps_dict() {

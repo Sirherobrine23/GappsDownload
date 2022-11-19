@@ -43,6 +43,7 @@
     "@the-bds-maneger/core-utils": "^1.1.1",
     "compare-versions": "^5.0.1",
     "jsdom": "^20.0.2",
+    "node-aapt": "^1.1.0",
     "xml2json": "^0.12.0"
   }
 }

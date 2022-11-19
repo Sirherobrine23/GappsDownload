@@ -1,9 +1,8 @@
-import { format } from "node:util";
 import { httpRequest } from "@the-bds-maneger/core-utils";
-import { toJson } from "xml2json";
-import { JSDOM } from "jsdom"
-import { writeFile } from "node:fs/promises";
 import { compareVersions } from "compare-versions";
+import { format } from "node:util";
+import { toJson } from "xml2json";
+import { JSDOM } from "jsdom";
 
 export const apkMap = {
   "com.android.chrome": "chrome",
@@ -110,9 +109,8 @@ type downloadObject = {
   }[]
 }
 
-export async function listPackages(androidVersion: string) {
+export async function listPackages(androidVersion?: string) {
   const host = "https://www.apkmirror.com";
-
   async function get_apk_versions_url(app: appSelect) {
     if (!apkMap[app]) throw new Error("Package not maped");
     const feedUrl = format("%s/apk/google-inc/%s/feed/", host, apkMap[app]);
@@ -151,10 +149,12 @@ export async function listPackages(androidVersion: string) {
           androidRequeriments: androidRequeriments
         };
       }));
-      dataReturn.push({
+      if (androidVersion) dataReturn.push({version: version.version, downloadUrls});
+      else dataReturn.push({
         version: version.version,
-        downloadUrls: downloadUrls.filter((data) => {
-          compareVersions(data.androidRequeriments.version, androidVersion) === 1
+        downloadUrls: downloadUrls.filter(({androidRequeriments}) => {
+          const version = androidRequeriments.Target?.version||androidRequeriments.Min?.version;
+          return compareVersions(version, androidVersion) >= 0;
         }),
       });
     }
@@ -162,10 +162,7 @@ export async function listPackages(androidVersion: string) {
   }
 
   return {
-    host,
     get_apk_download,
-    get_apk_versions_url,
+    get_apk_versions_url
   };
 }
-
-listPackages("13").then(res => res.get_apk_download("com.android.chrome")).then(res => JSON.stringify(res, null, 2)).then(res => writeFile("./apks.json", res));
